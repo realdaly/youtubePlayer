@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>YouTube Player</title>
+        <link rel="icon" type="image/x-icon" href="./assets/icons/playButton.svg">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                background: linear-gradient(90deg, #2193b0, #a2e2f0);
+	            min-height: calc(100vh - 100px);
+            }
+
+            .wrapper .playlistContainer {
+                display: flex;
+                margin: 3rem 10rem;
+                border: 3px dashed #000;
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+            .wrapper .playlistContainer .playlistItems {
+                flex: 1;
+                border-left: 3px dashed #000;
+            }
+
+            .wrapper .playlistContainer .playlistItems .playlistItem {
+                display: flex;
+                align-items: center;
+                column-gap: 1rem;
+                border-bottom: 3px dashed #000;
+                cursor: pointer;
+                transition: all .5s;
+            }
+
+            #activeVid {
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            .wrapper .playlistContainer .playlistItems .playlistItem:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+
+            .wrapper .playlistContainer .playlistItems .playlistItem .thumbnail {
+                flex: 1;
+            }
+
+            .wrapper .playlistContainer .playlistItems .playlistItem .title {
+                flex: 2;
+            }
+
+            .wrapper .playlistContainer .playlistItems .playlistItem .thumbnail img {
+                width: 100%;
+            }
+            
+            .wrapper .playlistContainer .player {
+                flex: 2;
+                position: relative;
+                cursor: pointer;
+                width: 20rem;
+                height: 25rem;
+                display: none;
+                background-image: url("./assets/images/defaultVideo.png");
+                background-size: cover;
+                background-position: center;
+            }
+
+            .wrapper .playlistContainer .player1 {
+                display: block;
+            }
+
+            .wrapper .playlistContainer .player .img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center;
+            }
+
+            .wrapper .playlistContainer .player iframe {
+                width: 100%;
+                height: 100%;
+            }
+
+            .wrapper .playlistContainer .player .overlay {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgb(255, 255, 255, .2);
+                transition: all .3s;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .wrapper .playlistContainer .player .overlay:hover {
+                background-color: rgb(255, 255, 255, .3);
+            }
+            
+            .wrapper .playlistContainer .player .overlay img {
+                width: 10%;
+                filter: drop-shadow(0 0 0.10rem #fff);
+            }
+
+            @media only screen and (max-width: 1150px) {
+                .wrapper .playlistContainer {
+                    flex-direction: column;
+                    margin: 3rem 1em;
+                }
+
+                .wrapper .playlistContainer .player {
+                    width: 100%;
+                    max-height: 15rem;
+                    flex: auto;
+                }
+
+                .wrapper .playlistContainer .playlistItems {
+                    border-left: none;
+                }
+            }
+        </style>
+
+            <script>
+                //this function runs according to the clicked playlist item
+                function showPlayer(item){
+                    //making all player divs display none
+                    document.querySelectorAll(".player").forEach(player => {
+                        player.style.display = "none";
+                    });
+
+                    //pausing all videos in youtube iframe
+                    document.querySelectorAll("iframe").forEach(iframe => {
+                        iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                    });
+
+                    document.querySelectorAll(".playlistItem").forEach(item => {
+                        item.removeAttribute("id");
+                    });
+
+                    //making the item in question display block
+                    document.querySelector(`.${item}`).style.display = "block";
+                }
+
+                //when the document is done loading this code runs
+                document.addEventListener("DOMContentLoaded", function(){
+                    //selecting all playlist items and listening for click event
+                    const playlistItems = document.querySelectorAll(".playlistItem");
+                    playlistItems.forEach(item => {
+                        item.onclick = function(){
+                            //when click event happens the showPlayer function runs for the current item
+                            //and takes as an argument the value inside the item's data-player attribute
+                            showPlayer(this.dataset.player);
+                            this.setAttribute("id", "activeVid");
+                        }
+                    });
+
+                    //selecting all player divs and listening for click event
+                    const players = document.querySelectorAll(".player");
+                    players.forEach(player => {
+                        player.onclick = function(){
+                            //when click event happens the innerHTML of the current div changes to be
+                            //the html inserted inside the data-link attribute of the same div
+                            player.innerHTML = this.dataset.link;
+                        }
+                    });
+                });
+            </script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="playlistContainer">
+                <div class="playlistItems">
+                    <div class="playlistItem" id="activeVid" data-player="player1">
+                        <div class="thumbnail">
+                            <img src="./assets/images/1.jpg" alt="">
+                        </div>
+                        <div class="title">
+                            <p>صوت المئذنة من العتبة العلوية المقدسة | القارئ الشيخ شبر معلة - سورة التوبة المباركة</p>
+                        </div>
+                    </div>
+
+                    <div class="playlistItem" data-player="player2">
+                        <div class="thumbnail">
+                            <img src="./assets/images/2.jpg" alt="">
+                        </div>
+                        <div class="title">
+                            <p>الأذان من العتبة العلوية المقدسة | القارئ الشيخ شبر معله</p>
+                        </div>
+                    </div>
+
+                    <div class="playlistItem" data-player="player3">
+                        <div class="thumbnail">
+                            <img src="./assets/images/3.jpg" alt="">
+                        </div>
+                        <div class="title">
+                            <p>المنبر القرآني #9 الفرق بين النبي والرسول في قوله تعالى: (الذين يتبعون الرسول النبي الأمي)</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="player player1" data-link='<iframe src="https://www.youtube.com/embed/o73VRElISyk?rel=0&version=3&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>'>
+                    <img class="img" src="./assets/images/1.jpg" alt="">
+                    <div class="overlay">
+                        <img src="./assets/icons/playButton.svg" alt="">
+                    </div>
+                </div>
+
+                <div class="player player2" data-link='<iframe src="https://www.youtube.com/embed/lKK4cOnIitg?rel=0&version=3&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>'>
+                    <img class="img" src="./assets/images/2.jpg" alt="">
+                    <div class="overlay">
+                        <img src="./assets/icons/playButton.svg" alt="">
+                    </div>
+                </div>
+                
+                <div class="player player3" data-link='<iframe src="https://www.youtube.com/embed/2ie_4hXib2E?rel=0&version=3&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe>'>
+                    <img class="img" src="./assets/images/3.jpg" alt="">
+                    <div class="overlay">
+                        <img src="./assets/icons/playButton.svg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
